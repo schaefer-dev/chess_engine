@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Board {
-    board_state: HashMap<Field, Option<piece::Piece>>
+    board_state: std::collections::HashMap<Field, piece::Piece>
 }
 
 impl Board {
@@ -11,6 +11,14 @@ impl Board {
         Board {
             board_state: HashMap::new()
         }
+    }
+
+    pub fn add_piece(&mut self, position: Field, piece: piece::Piece) {
+        self.board_state.insert(position, piece);
+    }
+
+    pub fn clear_field(&mut self, position: Field) {
+        self.board_state.remove_entry(&position);
     }
 
     fn reset(&mut self) {
@@ -24,14 +32,25 @@ impl Board {
     pub fn initial_position(&mut self) {
         self.reset();
 
+        let field = Field::new('a', 1);
+        let piece = piece::Piece::new(true, 'R');
+        self.add_piece(field.unwrap(), piece.unwrap());
     }
 }
 
 #[derive(Debug)]
+#[derive(Hash)]
 pub struct Field {
     file: char,
     rank: u8,
 }
+
+impl PartialEq for Field {
+    fn eq(&self, other: &Self) -> bool {
+        (self.file == other.file) && (self.rank == other.rank)
+    }
+}
+impl Eq for Field {}
 
 impl Field {
     pub fn new(file: char, rank: u8) -> Option<Field> {
