@@ -3,13 +3,25 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Board {
-    board_state: std::collections::HashMap<Field, piece::Piece>
+    board_state: std::collections::HashMap<Field, piece::Piece>,
+    move_history: Vec<(Field, Field)>,
+    en_passant_possible: Vec<(Field)>,
+    black_queenside_castling_possible: bool,
+    black_kingside_castling_possible: bool,
+    white_queenside_castling_possible: bool,
+    white_kingside_castling_possible: bool,
 }
 
 impl Board {
     pub fn new() -> Board {
         Board {
-            board_state: HashMap::new()
+            board_state: HashMap::new(),
+            move_history: vec!(),
+            en_passant_possible: vec!(),
+            black_queenside_castling_possible: true,
+            black_kingside_castling_possible: true,
+            white_queenside_castling_possible: true,
+            white_kingside_castling_possible: true,
         }
     }
 
@@ -23,6 +35,45 @@ impl Board {
 
     fn reset(&mut self) {
         self.board_state.clear()
+    }
+
+    /// returns the set of possible fields which may be moved to. Empty if not no moves possible
+    /// or if no figure is on the given field.
+    pub fn get_possible_moves(&self, position: Field) -> Vec<Field> {
+        let piece_opt = self.board_state.get(&position);
+
+        match piece_opt {
+            None => vec!(),
+            Some(piece) => {
+                match piece.figure {
+                    piece::Figure::Pawn => {
+                        let mut twoStepPossible = true;
+                        // TODO: implement
+                        vec!()
+                    }
+                    piece::Figure::Rook => {
+                        // TODO: implement
+                        vec!()
+                    }
+                    piece::Figure::Knight => {
+                        // TODO: implement
+                        vec!()
+                    }
+                    piece::Figure::Bishop => {
+                        // TODO: implement
+                        vec!()
+                    }
+                    piece::Figure::Queen => {
+                        // TODO: implement
+                        vec!()
+                    }
+                    piece::Figure::King => {
+                        // TODO: implement
+                        vec!()
+                    }
+                }
+            }
+        }
     }
 
     pub fn get_position(&self, file: char, rank: u8) -> Option<&piece::Piece> {

@@ -1,6 +1,6 @@
 #[derive(Debug)]
 #[derive(PartialEq)]
-enum Figure {
+pub enum Figure {
     Pawn,
     Rook,
     Knight,
@@ -10,15 +10,15 @@ enum Figure {
 }
 #[derive(Debug)]
 #[derive(PartialEq)]
-enum Color {
+pub enum Color {
     Black,
     White
 }
 
 #[derive(Debug)]
 pub struct Piece {
-    color: Color,
-    figure: Figure,
+    pub color: Color,
+    pub figure: Figure,
 }
 
 impl Piece {
