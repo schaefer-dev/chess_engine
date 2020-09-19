@@ -50,6 +50,24 @@ impl Piece {
             figure: figure.unwrap(),
         })
     }
+
+    // white figures are uppercase, black lowercase
+    pub fn command_line_character(&self) -> char {
+        let return_char = match self.figure {
+            Figure::King => 'k',
+            Figure::Knight => 'n',
+            Figure::Queen => 'q',
+            Figure::Pawn => 'p',
+            Figure::Rook => 'r',
+            Figure::Bishop => 'b',
+        };
+        if self.color == Color::White {
+            return_char.to_ascii_uppercase()
+        } else {
+            return_char
+        }
+
+    }
 }
 
 

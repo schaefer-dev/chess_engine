@@ -8,4 +8,6 @@ fn main() {
     board.initial_position();
 
     println!("Board: {:?}", board);
+
+    board.display_state_commandline();
 }

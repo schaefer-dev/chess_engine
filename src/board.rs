@@ -25,16 +25,49 @@ impl Board {
         self.board_state.clear()
     }
 
-    pub fn get_position(file: char, rank: u8) {
+    pub fn get_position(&self, file: char, rank: u8) -> Option<&piece::Piece> {
+        let fieldo = Field::new(file.to_ascii_uppercase(), rank);
+        if fieldo == None {
+            None
+        } else {
+            let field = fieldo.unwrap();
+            self.board_state.get(&field)
+        }
+    }
 
+    pub fn display_state_commandline(&self) {
+        print!("  ---------------------------------\n");
+        for rank in &[8, 7, 6, 5, 4, 3, 2, 1] {
+            self.print_rank(*rank);
+            print!("\n  ---------------------------------\n");
+        }
+        print!("    A   B   C   D   E   F   G   H  \n");
+    }
+
+    fn print_rank(&self, rank: u8) {
+        print!("{} |", rank);
+        for file in &['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] {
+            match self.get_position(*file, rank) {
+                Some(piece) => print!(" {} |", piece.command_line_character()),
+                None => print!("   |"),
+            }
+        }
     }
 
     pub fn initial_position(&mut self) {
         self.reset();
 
-        let field = Field::new('a', 1);
-        let piece = piece::Piece::new(true, 'R');
-        self.add_piece(field.unwrap(), piece.unwrap());
+        // TODO: maybe automate this
+
+        // place pawns
+        for file in &['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] {
+            let fieldw = Field::new(*file, 2);
+            let fieldb = Field::new(*file, 7);
+            let piecew = piece::Piece::new(true, 'p');
+            let pieceb = piece::Piece::new(false, 'p');
+            self.add_piece(fieldw.unwrap(), piecew.unwrap());
+            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
+        }
     }
 }
 
@@ -55,10 +88,10 @@ impl Eq for Field {}
 impl Field {
     pub fn new(file: char, rank: u8) -> Option<Field> {
         let file = file.to_ascii_uppercase();
-        if (file > 'H' || file < 'A') {
+        if file > 'H' || file < 'A' {
             None
         } else {
-            if (rank > 8) {
+            if rank > 8 {
                 None
             } else {
                 Some(Field { file: file, rank: rank })
