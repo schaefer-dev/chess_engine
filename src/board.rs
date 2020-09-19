@@ -56,67 +56,22 @@ impl Board {
 
     pub fn initial_position(&mut self) {
         self.reset();
-
-        // place pawns for both sides
-        for file in &['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] {
-            let fieldw = Field::new(*file, 2);
-            let fieldb = Field::new(*file, 7);
-            let piecew = piece::Piece::new(true, 'p');
-            let pieceb = piece::Piece::new(false, 'p');
-            self.add_piece(fieldw.unwrap(), piecew.unwrap());
-            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
-        }
-
         let pieces_sequence = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
-
-        // place rooks for both sides
-        for file in &['a', 'h'] {
+        let mut file_iter: usize = 0;
+        for file in &['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] {
             let fieldw = Field::new(*file, 1);
             let fieldb = Field::new(*file, 8);
-            let piecew = piece::Piece::new(true, 'r');
-            let pieceb = piece::Piece::new(false, 'r');
+            let fieldwp = Field::new(*file, 2);
+            let fieldbp = Field::new(*file, 7);
+            let piecew = piece::Piece::new(true, pieces_sequence[file_iter]);
+            let pieceb = piece::Piece::new(false, pieces_sequence[file_iter]);
+            let piecewp = piece::Piece::new(true, 'p');
+            let piecebp = piece::Piece::new(false, 'p');
             self.add_piece(fieldw.unwrap(), piecew.unwrap());
             self.add_piece(fieldb.unwrap(), pieceb.unwrap());
-        }
-
-        // place knight for both sides
-        for file in &['b', 'g'] {
-            let fieldw = Field::new(*file, 1);
-            let fieldb = Field::new(*file, 8);
-            let piecew = piece::Piece::new(true, 'n');
-            let pieceb = piece::Piece::new(false, 'n');
-            self.add_piece(fieldw.unwrap(), piecew.unwrap());
-            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
-        }
-
-        // place bishop for both sides
-        for file in &['c', 'f'] {
-            let fieldw = Field::new(*file, 1);
-            let fieldb = Field::new(*file, 8);
-            let piecew = piece::Piece::new(true, 'b');
-            let pieceb = piece::Piece::new(false, 'b');
-            self.add_piece(fieldw.unwrap(), piecew.unwrap());
-            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
-        }
-
-        // place queen for both sides
-        for file in &['d'] {
-            let fieldw = Field::new(*file, 1);
-            let fieldb = Field::new(*file, 8);
-            let piecew = piece::Piece::new(true, 'q');
-            let pieceb = piece::Piece::new(false, 'q');
-            self.add_piece(fieldw.unwrap(), piecew.unwrap());
-            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
-        }
-
-        // place queen for both sides
-        for file in &['e'] {
-            let fieldw = Field::new(*file, 1);
-            let fieldb = Field::new(*file, 8);
-            let piecew = piece::Piece::new(true, 'k');
-            let pieceb = piece::Piece::new(false, 'k');
-            self.add_piece(fieldw.unwrap(), piecew.unwrap());
-            self.add_piece(fieldb.unwrap(), pieceb.unwrap());
+            self.add_piece(fieldwp.unwrap(), piecewp.unwrap());
+            self.add_piece(fieldbp.unwrap(), piecebp.unwrap());
+            file_iter += 1
         }
     }
 }
