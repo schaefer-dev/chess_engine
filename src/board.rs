@@ -38,6 +38,31 @@ impl Board {
         self.board_state.clear()
     }
 
+
+    pub fn get_possible_moves_at_position(&self, file: char, rank: u8) -> Vec<Field> {
+        let fieldo = Field::new(file.to_ascii_uppercase(), rank);
+        if fieldo == None {
+            vec!()
+        } else {
+            let field = fieldo.unwrap();
+            self.get_possible_moves(field)
+        }
+    }
+
+    pub fn move_piece(&mut self, origin: Field, destination: Field) -> bool {
+        let (piece, origin) = self.get_figure_at_field(origin);
+
+        match piece {
+            None => false,
+            Some(piece) => {
+                self.clear_field(origin);
+                self.add_piece(destination, piece.unwrap());
+                true
+            }
+        }
+
+    }
+
     /// returns the set of possible fields which may be moved to. Empty if not no moves possible
     /// or if no figure is on the given field.
     pub fn get_possible_moves(&self, position: Field) -> Vec<Field> {
@@ -54,7 +79,69 @@ impl Board {
                             piece::Color::Black => if position.rank != 7 {twoStepPossible = false},
                         }
                         let mut possible_fields: Vec<Field> = vec!();
-                        // TODO: compute possible fields
+                        match piece.color {
+                            piece::Color::White => {
+                                let top_field = position.get_top_neighbour();
+                                // top field exists and is not occupied by other figure
+                                // TODO: add special case here for pawn promotion
+                                if top_field != None {
+                                    let (figure_opt, top_field) = self.get_figure_at_field(top_field.unwrap());
+                                    match figure_opt {
+                                        None => possible_fields.push(top_field),
+                                        Some(_) => ()
+                                    }
+                                    let top_field = position.get_top_neighbour().unwrap();
+
+                                    // continue by checking left and right neighbours of top field for possible options
+                                    // of fields that may be reached by beating a piece of the opponent.
+                                    let top_left_field = top_field.get_left_neighbour();
+                                    let top_right_field = top_field.get_right_neighbour();
+                                    let top_top_field = top_field.get_top_neighbour();
+
+                                    if top_left_field != None {
+                                        let top_left_field = top_left_field.unwrap();
+                                        let (fig_opt, top_left_field) = self.get_figure_at_field(top_left_field);
+                                        match fig_opt {
+                                            None => (),
+                                            Some(check_piece) => {
+                                                if check_piece.color != piece.color {
+                                                    // opponent piece on position -> may get beaten
+                                                    possible_fields.push(top_left_field);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if top_right_field != None {
+                                        let top_right_field = top_right_field.unwrap();
+                                        let (fig_opt, top_right_field) = self.get_figure_at_field(top_right_field);
+                                        match fig_opt {
+                                            None => (),
+                                            Some(check_piece) => {
+                                                if check_piece.color != piece.color {
+                                                    // opponent piece on position -> may get beaten
+                                                    possible_fields.push(top_right_field);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if twoStepPossible && top_top_field != None {
+                                        let (figure_opt, top_top_field) = self.get_figure_at_field(top_top_field.unwrap());
+                                        match figure_opt {
+                                            None => possible_fields.push(top_top_field),
+                                            Some(_) => ()
+                                        }
+                                    }
+
+                                }
+
+                            },
+                            piece::Color::Black => {
+
+
+                            },
+                        }
 
                         possible_fields
                     }
@@ -83,13 +170,17 @@ impl Board {
         }
     }
 
+    pub fn get_figure_at_field(&self, field: Field) -> (Option<&piece::Piece>, Field) {
+        (self.board_state.get(&field), field)
+    }
+
     pub fn get_figure_at_position(&self, file: char, rank: u8) -> Option<&piece::Piece> {
         let fieldo = Field::new(file.to_ascii_uppercase(), rank);
         if fieldo == None {
             None
         } else {
             let field = fieldo.unwrap();
-            self.board_state.get(&field)
+            self.get_figure_at_field(field).0
         }
     }
 
@@ -131,5 +222,37 @@ impl Board {
             self.add_piece(field_bp.unwrap(), piece_bp.unwrap());
             file_iter += 1
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use crate::board::Board;
+    use crate::field::Field;
+    use crate::piece::{Color, Figure};
+
+    #[test]
+    fn valid_board_creation_initial_pawn_move() {
+        let mut board = Board::new();
+        board.initial_position();
+
+        match board.get_figure_at_position('b', 2) {
+            None => panic!("supposed to be pawn at this position"),
+            Some(piece) => {
+                assert_eq!(piece.color, Color::White);
+                assert_eq!(piece.figure, Figure::Pawn)
+            }
+        }
+
+        let possible_moves = board.get_possible_moves_at_position('b', 2);
+        assert_eq!(possible_moves, [Field { file: 'B', rank: 3 }, Field { file: 'B', rank: 4 }]);
+
+        // move pawn to b3
+        let field_origin = Field::new('b', 2).unwrap();
+        let field_dest = Field::new('b', 3).unwrap();
+        board.move_piece(field_origin, field_dest);
+
+        board.display_state_commandline();
     }
 }
