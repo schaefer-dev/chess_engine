@@ -1,5 +1,6 @@
 mod board;
 mod piece;
+mod field;
 
 fn main() {
 
