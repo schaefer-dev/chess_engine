@@ -13,11 +13,16 @@ impl Board {
         }
     }
 
+    fn reset(&mut self) {
+        self.board_state.clear()
+    }
+
     pub fn get_position(file: char, rank: u8) {
 
     }
 
     pub fn initial_position(&mut self) {
+        self.reset();
 
     }
 }
