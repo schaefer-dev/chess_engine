@@ -46,7 +46,7 @@ impl Piece {
         };
 
         Some(Piece {
-            color: color,
+            color,
             figure: figure.unwrap(),
         })
     }
