@@ -42,3 +42,50 @@ impl Field {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::board;
+    #[test]
+    fn valid_field_creation_01() {
+        let field1 = board::Field::new('a', 1);
+        match field1 {
+            Some(field) => {
+                assert_eq!(field.file, 'A');
+                assert_eq!(field.rank, 1);
+            },
+            None => panic!("Field was not created correctly")
+        }
+    }
+    fn valid_field_creation_02() {
+        let field1 = board::Field::new('h', 8);
+        match field1 {
+            Some(field) => {
+                assert_eq!(field.file, 'H');
+                assert_eq!(field.rank, 8);
+            },
+            None => panic!("Field was not created correctly")
+        }
+    }
+
+    fn invalid_field_creation_01() {
+        let field1 = board::Field::new('i', 1);
+        match field1 {
+            Some(field) => {
+                panic!("Field was created despite being invalid")
+            },
+            None => ()
+        }
+    }
+
+    fn invalid_field_creation_02() {
+        let field1 = board::Field::new('d', 9);
+        match field1 {
+            Some(field) => {
+                panic!("Field was created despite being invalid")
+            },
+            None => ()
+        }
+    }
+}
